@@ -12,7 +12,7 @@ public interface ContratRepository extends JpaRepository<Contrat,Long> {
 
     List<Contrat> getBydateFinC(Date dateFinC);
     //select * from Contrat where nom=? and prenom
-
+//zdvccccccccccc
     List<Contrat> findByspecialite(String specialite);
     List<Contrat> findByMontantCBetween(float min,float Max);
 
