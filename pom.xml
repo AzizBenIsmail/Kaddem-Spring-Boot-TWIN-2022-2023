@@ -8,11 +8,11 @@
         <version>2.7.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.example</groupId>
-    <artifactId>Spring-Data-Jpa</artifactId>
+    <groupId>esprit.tn</groupId>
+    <artifactId>amdouniDev</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Spring-Data-Jpa</name>
-    <description>Spring-Data-Jpa</description>
+    <name>Kaddem</name>
+    <description>Kaddem</description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -40,6 +40,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
         </dependency>
     </dependencies>
 
