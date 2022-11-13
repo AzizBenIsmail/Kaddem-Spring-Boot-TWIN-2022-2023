@@ -11,7 +11,7 @@ public interface IUniversiteService {
 
     List<Universite> addUniversite(List<Universite> listUniversite);
 
-    Universite updateUniversite(Universite d);
+    Universite updateUniversite(Universite d,long id);
 
     List<Universite> updateUniversite(List<Universite> listUniversite);
 
@@ -24,5 +24,15 @@ public interface IUniversiteService {
     Universite findUniversiteById(Long id);
 
     Universite findBynomUniversite(String Nom);
+
+    public void assignUniversitetoDepartement(Integer idUniversite,Integer idDepartement);
+
+    public void desaffectUniversitetoDepartement(Integer idUniversite, Integer idDepartement);
+
+    public void aassignUniversitetoDepartement(Integer idUniversite, Integer idDepartement);
+
+    public void assignUniversitetolistDepartement(Integer idUniversite, List<Integer> ListidDepartement);
+
+
 
     }

@@ -1,17 +1,18 @@
 package esprit.tn.amdounidev.Services;
 
+import esprit.tn.amdounidev.Exceptions.EquipeNotFoundException;
 import esprit.tn.amdounidev.Repository.DetailEquipeRepository;
 import esprit.tn.amdounidev.Repository.EquipeRepository;
 import esprit.tn.amdounidev.entities.DetailEquipe;
 import esprit.tn.amdounidev.entities.Equipe;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class EquipeServiceImpl implements EquipeService {
     @Autowired
@@ -22,32 +23,67 @@ public class EquipeServiceImpl implements EquipeService {
 
     @Override
     public void saveEquipe(Equipe equipe) {
-        DetailEquipe detailEquipe=new DetailEquipe();
+       DetailEquipe detailEquipe=new DetailEquipe();
+
+       detailEquipe.setDateCreation(new Date());
+       detailEquipe.setDateActivation(new Date());
+        detailEquipe.setDateSuppression(new Date());
+       detailEquipeRepository.save(detailEquipe);
+        equipe.setDetailEquipe(detailEquipe);
+       equipe.setIsValid(false);
+       equipe.setIsDeleted(false);
+
+ equipeRepository.save(equipe);
+ log.info("Equipe ajouté :\n" +
+         "Nom d\'equipe "+equipe.getNomEquipe() +" " +
+         "Niveau " +equipe.getNiveau()+" "+
+         "Etat de suppression : non supprimé" +
+         "Etat de validation : non validé " +
+         "Etat Ajouté par defaut(false)" +
+         "Niveau par defaut junior ! ." );
+    }
+
+    @Override
+    public void saveEquipeAndDetail(Equipe equipe, DetailEquipe detailEquipe) {
+
 
         detailEquipe.setDateCreation(new Date());
         detailEquipe.setDateActivation(new Date());
         detailEquipe.setDateSuppression(new Date());
         detailEquipeRepository.save(detailEquipe);
         equipe.setDetailEquipe(detailEquipe);
- equipeRepository.save(equipe);
+        equipe.setIsValid(false);
+        equipe.setIsDeleted(false);
+
+        equipeRepository.save(equipe);
     }
 
 
     @Override
     public Equipe updateEquipe(Equipe equipe, Long idE) {
-        Equipe updateEquipe = equipeRepository.findById(idE).orElseThrow();
+      //  Equipe updateEquipe = equipeRepository.findById(idE).orElseThrow(()-> new IllegalArgumentException("Not Found"));
+        Optional<Equipe> updateEquipe = equipeRepository.findById(idE);
+        if (updateEquipe.isPresent()) {
+        equipe.setNomEquipe  (equipe.getNomEquipe());
+            equipe.setNiveau(equipe.getNiveau());
+            equipe.setIsValid(false);
+            equipe.setIsDeleted(false);
 
 
-        updateEquipe.setNomEquipe  (equipe.getNomEquipe());
-        updateEquipe.setNiveau(equipe.getNiveau());
-        updateEquipe.setIsValid(false);
-        updateEquipe.setIsDeleted(false);
 
-
-
-        equipeRepository.save(updateEquipe);
-        return updateEquipe;
+        equipeRepository.save(equipe);}
+        return equipe;
     }
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void deleteEquipe(Equipe equipe) {
@@ -70,8 +106,8 @@ public class EquipeServiceImpl implements EquipeService {
     }
 
     @Override
-    public Optional<Equipe> findById(Long id) {
-        return equipeRepository.findById(id);
+    public Equipe findById(Long id) {
+        return equipeRepository.findById(id).orElseThrow(() -> new EquipeNotFoundException(id));
     }
 
     @Override

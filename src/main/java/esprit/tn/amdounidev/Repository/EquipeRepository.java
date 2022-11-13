@@ -16,10 +16,13 @@ import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface EquipeRepository extends CrudRepository<Equipe,Long> {
+// afficher la liste des equipres thematique=sport
 
 
     @Query("SELECT e FROM Equipe e WHERE e.nomEquipe = ?1")
     public Equipe findByNom(String nomEquipe);
+    @Query("SELECT e FROM Equipe e WHERE e.idEquipe = ?1")
+    public Equipe findByIdEquipe(Long nomEquipe);
 
     @Query("SELECT e.detailEquipe.idDetailEquipe FROM Equipe e ")
     public List<Equipe> findAllEquipes();
@@ -34,7 +37,6 @@ public interface EquipeRepository extends CrudRepository<Equipe,Long> {
     @Modifying
     @Query("update Equipe e set e.isDeleted =:deleted  where e.idEquipe =:id")
     void changeDeleteEquipe(@Param("id") Long id, @Param("deleted") Boolean deleted);
-
 
 
 
