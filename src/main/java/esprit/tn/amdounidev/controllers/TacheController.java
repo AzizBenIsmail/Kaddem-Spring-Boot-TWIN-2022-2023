@@ -1,20 +1,28 @@
 package esprit.tn.amdounidev.controllers;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
+import esprit.tn.amdounidev.Repository.EtudiantRepository;
 import esprit.tn.amdounidev.Repository.ProjetRepository;
+import esprit.tn.amdounidev.Repository.TacheRepository;
+import esprit.tn.amdounidev.Services.FirebaseService;
 import esprit.tn.amdounidev.Services.ITacheService;
-import esprit.tn.amdounidev.entities.Departement;
-import esprit.tn.amdounidev.entities.Projet;
-import esprit.tn.amdounidev.entities.Tache;
+import esprit.tn.amdounidev.entities.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Null;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("Tache")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -22,9 +30,15 @@ import java.util.List;
 public class TacheController {
     @Autowired
     ITacheService ts;
+    @Autowired
+    FirebaseService fs;
     @Autowired //ou @Inject
     ProjetRepository pr;
+@Autowired
+    TacheRepository tr;
 
+    @Autowired
+    EtudiantRepository er;
 
     @Operation(summary = "Add Task", description = "Ajouter une tache")
     @ApiResponses(value = {
@@ -34,8 +48,12 @@ public class TacheController {
     })
 
 
-    @PostMapping("addTache")
-    public Tache addTache(@RequestBody Tache t) {
+    @PostMapping("addTache/{idProjet}/{idEtudiant}")
+    public Tache addTache(@RequestBody Tache t ,@PathVariable("idProjet") Long idProjet, @PathVariable("idEtudiant") Long idEtudiant) {
+        Projet p =pr.findByIdProjet(idProjet);
+        Etudiant e=er.findByIdEtudiant(idEtudiant);
+        t.setProjet(p);
+        t.setEtudiant(e);
         return  ts.addTache(t);
     }
 
@@ -45,8 +63,15 @@ public class TacheController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied",content = @Content),
             @ApiResponse(responseCode = "404", description = "Add failed",content = @Content)
     })
-    @PostMapping("addTaches")
-    public List<Tache> addTache(@RequestBody List<Tache> listTache) {
+    @PostMapping("addTaches/{idProjet}/{idEtudiant}")
+    public List<Tache> addTache(@RequestBody List<Tache> listTache , @PathVariable("idProjet") Long idProjet, @PathVariable("idEtudiant") Long idEtudiant) {
+
+        Projet p =pr.findByIdProjet(idProjet);
+        Etudiant e=er.findByIdEtudiant(idEtudiant);
+        for(Tache t :listTache ){
+            t.setProjet(p);
+            t.setEtudiant(e);
+        }
         return ts.addTache(listTache);
     }
 
@@ -59,6 +84,8 @@ public class TacheController {
 
     @PutMapping("updateTache")
     public Tache updateTache(@RequestBody Tache t) {
+
+        t.setProjet(t.getProjet());
         return  ts.addTache(t);
     }
 
@@ -71,6 +98,8 @@ public class TacheController {
     })
     @PutMapping("updateTaches")
     public List<Tache> updateTache(@RequestBody List<Tache> listTache) {
+
+
         return ts.addTache(listTache);
     }
 
@@ -83,9 +112,12 @@ public class TacheController {
     })
 
 
-    @DeleteMapping("deleteTachebyId/{idTache}")
-    public void deleteTache( @PathVariable("idTache") Long id) {
-        ts.deleteTache(id);
+
+
+
+    @DeleteMapping("deleteTacheById/{idTache}")
+    public void deleteTache(@PathVariable("idTache") Long id) {
+       ts.deleteTache(id);
     }
 
 
@@ -95,7 +127,7 @@ public class TacheController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied",content = @Content),
             @ApiResponse(responseCode = "404", description = "delete failed",content = @Content)
     })
-    @DeleteMapping("deleteTache")
+    @PostMapping("deleteTache")
     public void deleteTache( @RequestBody Tache t) {
         ts.deleteTache(t);
     }
@@ -121,8 +153,13 @@ public class TacheController {
 
 
     @GetMapping("findTacheById/{idTache}")
-    public Tache findTacheById( @RequestParam("idTache") Long id) {
+    public Tache findTacheById( @PathVariable("idTache") Long id) {
         return ts.findTacheById(id);
+    }
+
+    @GetMapping("findTacheByNom/{nom}")
+    public Tache findTacheByNom( @PathVariable("nom") String nom) {
+        return tr.findByNomTache(nom);
     }
 
 
@@ -132,9 +169,30 @@ public class TacheController {
         ts.aassignProjetToTache(idProjet,idTache);
 
     }
+    @GetMapping("findTachesByProjet/{idProjet}")
+    public List<Tache> findTachesByProjet(@PathVariable("idProjet") Long idProjet) {
+
+        return ts.getTachesByProjet(idProjet);
+
+    }
+
+
+    @GetMapping("findTachesByNameProjet/{nom}")
+    public List<Tache> findTachesByNameProjet(@PathVariable("nom") String nom) {
+
+        return tr.findByTachesByNameProjet(nom);
+
+    }
 
 
 
+
+    @GetMapping("findEtudiantByTache/{idTache}")
+    public Etudiant findEtudiantByTache(@PathVariable("idTache") Long idTache) {
+
+        return  ts.getEtudiantByTache(idTache);
+
+    }
 
 
 
@@ -145,4 +203,14 @@ public class TacheController {
         return  ts.getProjetByTache(idTache);
 
     }
+
+/*   @PostMapping("sendNotif")
+    public String sendNotification(@RequestBody Notee note
+                                  ) throws FirebaseMessagingException {
+        return fs.sendNotification(note);
+    }
+*/
+
+
+
 }

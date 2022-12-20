@@ -1,6 +1,9 @@
 package esprit.tn.amdounidev.controllers;
 
+import esprit.tn.amdounidev.Repository.UniversiteRepository;
 import esprit.tn.amdounidev.Services.IUniversiteService;
+import esprit.tn.amdounidev.entities.Departement;
+import esprit.tn.amdounidev.entities.Equipe;
 import esprit.tn.amdounidev.entities.Universite;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,11 +23,15 @@ import java.util.List;
 //@Controller ou @ResponseBody
 @RequestMapping("Universite")
 @Tag(name ="Universite" ,description = "Gestion de l'Universite ")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UniversiteController {
 
     @Autowired
     IUniversiteService us;
+
+    @Autowired
+    UniversiteRepository UR;
 
     @Operation(summary = "Add Universite", description = "Ajouter une Universites")
     @ApiResponses(value = {
@@ -50,17 +57,19 @@ public class UniversiteController {
         return us.addUniversite(listDepartment);
     }
 
-    @Operation(summary = "Update a Universite", description = "Modifier une Universite ")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Modifier Avec Succ",content = { @Content(mediaType = "application/json",schema = @Schema(implementation = Universite.class)) }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied",content = @Content),
-            @ApiResponse(responseCode = "404", description = "Modifier failed",content = @Content)
-    })
+//    @Operation(summary = "Update a Universite", description = "Modifier une Universite ")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Modifier Avec Succ",content = { @Content(mediaType = "application/json",schema = @Schema(implementation = Universite.class)) }),
+//            @ApiResponse(responseCode = "400", description = "Invalid id supplied",content = @Content),
+//            @ApiResponse(responseCode = "404", description = "Modifier failed",content = @Content)
+//    })
 
     @PutMapping("updateUniversite/{id}")
     public Universite updateUniversite(@RequestBody Universite universite, @PathVariable Long id ) {
         return  us.updateUniversite(universite,id);
     }
+
+
 
     @Operation(summary = "Update list Universite", description = "Modifier une liste des Universites ")
     @ApiResponses(value = {
@@ -118,10 +127,10 @@ public class UniversiteController {
        @ApiResponse(responseCode = "404", description = "Universite not found",content = @Content)
     })
 
-    @GetMapping("findUniversiteById")
-    public Universite findUniversiteById(@Parameter(description = "id of book to be searched")  @RequestParam Long id ) {
-        return us.findUniversiteById(id);
-    }
+        @GetMapping("findUniversiteById")
+        public Universite findUniversiteById(@Parameter(description = "id of book to be searched")  @RequestParam Long id ) {
+            return us.findUniversiteById(id);
+        }
 
     @Operation(summary = "Get Universites par son Nom", description = "Returns Universites specifique")
     @ApiResponses(value = {
@@ -131,7 +140,36 @@ public class UniversiteController {
     })
 
     @GetMapping("findUniversiteByNom")
-    public Universite findUniversiteById( @RequestParam String Nom) {
-        return us.findBynomUniversite(Nom);
+    public List<Universite> findUniversiteByNom( @RequestParam String Nom) {
+        return us.RecupbynomUniversite(Nom);
+    }
+
+    @GetMapping("findUniversiteBysurfaceUniversite")
+    public List<Universite> findUniversiteBysurfaceUniversite( @RequestParam int surfaceUniversite) {
+        return us.RecupereBysurface_universite(surfaceUniversite);
+    }
+
+    @PostMapping("affectDepartement/{idUniversites}/{iddepartement}")
+    public void affecterProjectToTache(@PathVariable("idUniversites") Long idUniversites,@PathVariable("iddepartement") Long iddepartement) {
+        us.aassignUniversitetoDepartement(idUniversites,iddepartement);
+    }
+
+    @GetMapping("findByetatUniversite")
+    public List<Universite> findByetatUniversite(@RequestParam String etpe) {
+        return UR.findByetatUniversite(etpe);
+    }
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bien mis a jour"),
+            @ApiResponse(responseCode = "400", description = "Essayer de taper un identifiant valide"),
+            @ApiResponse(responseCode = "404", description = "!!!!  universite  inexistante"),
+            @ApiResponse(responseCode = "500", description = "erreur serveur")})
+
+    @Operation(summary = "Mettre a jour une universite",description = "Mettre a jour une equipe via son id")
+    @PutMapping("updateU/{id}")
+    public Universite updateEquipe(@RequestBody Universite u, @PathVariable Long id) {
+
+       return  us.updateUniversite(u,id);
+
     }
 }
+

@@ -2,18 +2,36 @@ package esprit.tn.amdounidev.Services;
 
 import esprit.tn.amdounidev.entities.Contrat;
 import esprit.tn.amdounidev.entities.Etudiant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface IContratService {
 
-    Contrat saveContart(Contrat contrat);
-    Contrat updateContart(Contrat contrat, Long id);
-    void deleteContratById(Long id);
-    void deleteContrat(Contrat contrat);
+    Page<Contrat> retrieveAllContrats(Pageable pageable);
     List<Contrat> listeContrats();
-        Contrat findContratById(Long id);
+    Contrat updateContart(Long id,Contrat contrat);
+    Contrat addContart(Contrat ce);
+    Contrat retrieveContrat (Long idContrat);
+    void removeContratById(Long idContrat);
+    void removeContrat(Contrat ce);
 
-    public Etudiant AddandassigntEtudianttoequipeandcontract(Etudiant e, Integer IDContrat, Integer idEquipe);
+    Integer nbContratsValides(Date startDate, Date endDate);
 
+
+
+    Etudiant addAndAssignEtudiantToEquipeAndContract(Etudiant e, Long idContrat, Long idEquipe);
+
+    Float getChiffreAffaireEntreDeuxDate(Date startDate, Date endDate, Long idUniversite);
+
+    Contrat affectContratToEtudiant (Contrat ce, String nomE, String prenomE);
+
+    String retrieveAndUpdateStatusContrat();
+
+    List<Contrat> contratsArchives();
+    List<Contrat> contratsNonArchives();
 }
+

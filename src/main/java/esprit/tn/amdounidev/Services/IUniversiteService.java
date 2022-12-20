@@ -23,15 +23,18 @@ public interface IUniversiteService {
 
     Universite findUniversiteById(Long id);
 
-    Universite findBynomUniversite(String Nom);
+    List<Universite> RecupbynomUniversite(String Nom);
 
-    public void assignUniversitetoDepartement(Integer idUniversite,Integer idDepartement);
 
-    public void desaffectUniversitetoDepartement(Integer idUniversite, Integer idDepartement);
+    List<Universite> RecupereBysurface_universite(int RecupereBysurface_universite);
 
-    public void aassignUniversitetoDepartement(Integer idUniversite, Integer idDepartement);
+    public void assignUniversitetoDepartement(Long idUniversite,Long idDepartement);
 
-    public void assignUniversitetolistDepartement(Integer idUniversite, List<Integer> ListidDepartement);
+    public void desaffectUniversitetoDepartement(Long idUniversite, Long idDepartement);
+
+    public void aassignUniversitetoDepartement(Long idUniversite, Long idDepartement);
+
+    public void assignUniversitetolistDepartement(Long idUniversite, List<Long> ListidDepartement);
 
 
 

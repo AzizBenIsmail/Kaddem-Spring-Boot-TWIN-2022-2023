@@ -2,7 +2,10 @@ package esprit.tn.amdounidev.Services;
 
 import esprit.tn.amdounidev.Repository.ReclamationRepository;
 import esprit.tn.amdounidev.entities.Reclamation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ReclamationService implements IReclamationService{
 
     @Autowired
@@ -21,19 +25,20 @@ public class ReclamationService implements IReclamationService{
     }
 
     @Override
+    public List<Reclamation> saveReclamations(List<Reclamation> listReclamations) {
+        return reclamationRepository.saveAll(listReclamations);
+    }
+
+    @Override
     public Reclamation updateReclamation(Reclamation reclamation, Long id) {
-        Optional<Reclamation> updateRec = reclamationRepository.findById(id);
-        if(updateRec.isPresent()){
-            Long idRec= reclamation.getId();
-            System.out.println(idRec);
-            reclamation.setDate(new Date());
-            reclamation.setMessage(reclamation.getMessage());
-            reclamation.setTitle(reclamation.getTitle());
-            reclamation.setImage(reclamation.getImage());
-            reclamation.setProcessed(false);
-            reclamationRepository.save(reclamation);
-        }
-        return reclamation;
+
+      return reclamationRepository.save(reclamation);
+
+    }
+
+    @Override
+    public List<Reclamation> updateReclamations(List<Reclamation> listReclamations) {
+        return reclamationRepository.saveAll(listReclamations);
     }
 
     @Override
@@ -47,8 +52,25 @@ public class ReclamationService implements IReclamationService{
     }
 
     @Override
-    public List<Reclamation> listeReclamations() {
-        return reclamationRepository.findAll();
+    public Page<Reclamation> listeReclamations(Pageable pageable) {
+        return reclamationRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Reclamation> listeReclamationsNonTratitees() {
+        return reclamationRepository.reclamationsNonTratitees();
+    }
+
+    @Override
+    public List<Reclamation> listeReclamationsTratitees() {
+        return reclamationRepository.reclamationsTraitees();
+    }
+
+    @Override
+    public Reclamation traiterRec(Long id, Reclamation reclamation) {
+        reclamation=this.reclamationRepository.findById(id).get();
+        reclamation.setEtat(true);
+        return reclamation;
     }
 
     @Override
@@ -56,3 +78,4 @@ public class ReclamationService implements IReclamationService{
         return reclamationRepository.findById(id).orElse(new Reclamation());
     }
 }
+
